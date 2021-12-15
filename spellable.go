@@ -9,24 +9,26 @@ import (
 )
 
 var (
-	target = flag.String("target", "", "Word to look up spellables from")
+	spell = flag.String("spell", "", "Word to look up spellables from")
 )
 
-// dict reads the contents of the dictionary, minus any blank lines.
-func dict(file string) ([]string, error) {
+// dictionary reads the contents of the dictionary, minus any blank lines.
+func dictionary(file string) ([]string, error) {
 	contents, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("Unable to read file %s", file)
 	}
 
-	lines := strings.Split(string(contents), "\n")
+	words := strings.Split(string(contents), "\n")
 
 	// Strip trailing blank lines
-	for lines[len(lines)-1] == "" {
-		lines = lines[:len(lines)-1]
+	for words[len(words)-1] == "" {
+		words = words[:len(words)-1]
 	}
 
-	return lines, nil
+	sort.Strings(words)
+
+	return words, nil
 }
 
 // spellable returns whether w2 is spellable from the letters in w1.
@@ -50,6 +52,7 @@ func spellable(w1, w2 string) bool {
 	return true
 }
 
+// spellables returns each word that can be spelled
 func spellables(word string, words []string) []string {
 	var matches []string
 
@@ -62,21 +65,27 @@ func spellables(word string, words []string) []string {
 		}
 	}
 
+	sort.Strings(matches)
+
 	return matches
 }
 
+// matchless finds all words that do not spell anything
 func matchless(s map[string][]string) []string {
-	var matchless []string
+	var m []string
 
 	for word, words := range s {
 		if len(words) == 0 {
-			matchless = append(matchless, word)
+			m = append(m, word)
 		}
 	}
 
-	return matchless
+	sort.Strings(m)
+
+	return m
 }
 
+// longestMatchless returns the longest words that do not spell anything
 func longestMatchless(s map[string][]string) []string {
 	m := matchless(s)
 
@@ -96,16 +105,30 @@ func longestMatchless(s map[string][]string) []string {
 		longest = append(longest, word)
 	}
 
-	sort.Strings(longest)
-
 	return longest
+}
+
+// lookup returns what the word spells and whether the word is in the dictionary
+func lookup(l string, dict []string) ([]string, bool) {
+	known := false
+
+	for _, word := range dict {
+		if word == l {
+			known = true
+			break
+		}
+	}
+
+	results := spellables(*spell, dict)
+
+	return results, known
 }
 
 func main() {
 	flag.Parse()
 
 	// Load the dictionary.
-	words, err := dict("dict")
+	dict, err := dictionary("dict")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -113,23 +136,19 @@ func main() {
 
 	// Find all words that are spellable from a given word.
 	s := make(map[string][]string)
-	for _, word := range words {
-		s[word] = spellables(word, words)
+	for _, word := range dict {
+		s[word] = spellables(word, dict)
 	}
 
 	fmt.Println(longestMatchless(s))
 
 	// If there is a word to look up, do that.
-	if *target != "" {
+	if *spell != "" {
+		results, known := lookup(*spell, dict)
 		fmt.Println()
-		for _, word := range words {
-			if word == *target {
-				fmt.Println("This is a known word!!!")
-				break
-			}
+		if known {
+			fmt.Println("This is a known word!!!")
 		}
-		results := spellables(*target, words)
-		sort.Strings(results)
 		fmt.Println(results)
 	}
 }
