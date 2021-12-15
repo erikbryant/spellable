@@ -1,9 +1,15 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
+	"sort"
 	"strings"
+)
+
+var (
+	target = flag.String("target", "", "Word to look up spellables from")
 )
 
 // dict reads the contents of the dictionary, minus any blank lines.
@@ -27,6 +33,7 @@ func dict(file string) ([]string, error) {
 func spellable(w1, w2 string) bool {
 	for _, c2 := range w2 {
 		found := false
+
 		for i, c1 := range w1 {
 			if c1 == c2 {
 				w1 = w1[:i] + w1[i+1:]
@@ -34,6 +41,7 @@ func spellable(w1, w2 string) bool {
 				break
 			}
 		}
+
 		if !found {
 			return false
 		}
@@ -88,10 +96,14 @@ func longestMatchless(s map[string][]string) []string {
 		longest = append(longest, word)
 	}
 
+	sort.Strings(longest)
+
 	return longest
 }
 
 func main() {
+	flag.Parse()
+
 	// Load the dictionary.
 	words, err := dict("dict")
 	if err != nil {
@@ -106,4 +118,18 @@ func main() {
 	}
 
 	fmt.Println(longestMatchless(s))
+
+	// If there is a word to look up, do that.
+	if *target != "" {
+		fmt.Println()
+		for _, word := range words {
+			if word == *target {
+				fmt.Println("This is a known word!!!")
+				break
+			}
+		}
+		results := spellables(*target, words)
+		sort.Strings(results)
+		fmt.Println(results)
+	}
 }
