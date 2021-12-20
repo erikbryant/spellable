@@ -134,21 +134,26 @@ func main() {
 		return
 	}
 
-	// Find all words that are spellable from a given word.
-	s := make(map[string][]string)
-	for _, word := range dict {
-		s[word] = spellables(word, dict)
-	}
-
-	fmt.Println(longestMatchless(s))
-
-	// If there is a word to look up, do that.
+	// If there is a word to look up do that, else print matchless words.
 	if *spell != "" {
-		results, known := lookup(*spell, dict)
-		fmt.Println()
-		if known {
-			fmt.Println("This is a known word!!!")
+		for _, d := range dict {
+			if *spell == d {
+				fmt.Println("This is a known word!!!")
+				break
+			}
 		}
-		fmt.Println(results)
+		fmt.Println(spellables(*spell, dict))
+	} else {
+		// This can be sped up greatly. Short circuit after any match is
+		// found. We don't need to find all matches; any match is an
+		// automatic elimination from consideration.
+
+		// Find all words that are spellable from a given word.
+		s := make(map[string][]string)
+		for _, word := range dict {
+			s[word] = spellables(word, dict)
+		}
+
+		fmt.Println(longestMatchless(s))
 	}
 }
