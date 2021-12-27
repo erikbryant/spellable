@@ -142,7 +142,9 @@ func main() {
 				break
 			}
 		}
-		fmt.Println(spellables(*spell, dict))
+
+		s := spellables(*spell, dict)
+		fmt.Println(s, len(s))
 	} else {
 		// This can be sped up greatly. Short circuit after any match is
 		// found. We don't need to find all matches; any match is an
