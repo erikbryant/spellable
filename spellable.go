@@ -1,6 +1,6 @@
 package main
 
-// go fmt && golint && go test && go run spellable.go
+// go fmt && golint && go test && go run spellable.go -spell assume
 
 import (
 	"flag"
