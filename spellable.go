@@ -1,5 +1,7 @@
 package main
 
+// go fmt && golint && go test && go run spellable.go
+
 import (
 	"flag"
 	"fmt"
@@ -128,7 +130,7 @@ func main() {
 	flag.Parse()
 
 	// Load the dictionary.
-	dict, err := dictionary("dict")
+	dict, err := dictionary("../dictionaries/whirlyWord.dict")
 	if err != nil {
 		fmt.Println(err)
 		return
