@@ -14,7 +14,7 @@ var (
 	spell = flag.String("spell", "", "Word to look up spellables from")
 )
 
-// dictionary reads the contents of the dictionary, minus any blank lines.
+// dictionary reads the contents of the dictionary, minus any blank lines
 func dictionary(file string) ([]string, error) {
 	contents, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -33,7 +33,7 @@ func dictionary(file string) ([]string, error) {
 	return words, nil
 }
 
-// spellable returns whether w2 is spellable from the letters in w1.
+// spellable returns whether w2 is spellable from the letters in w1
 func spellable(w1, w2 string) bool {
 	for _, c2 := range w2 {
 		found := false
