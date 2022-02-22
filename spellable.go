@@ -126,38 +126,47 @@ func lookup(l string, dict []string) ([]string, bool) {
 	return results, known
 }
 
+func known(word string, dict []string) bool {
+	if word == "" {
+		return false
+	}
+
+	for _, d := range dict {
+		if word == d {
+			return true
+		}
+	}
+
+	return false
+}
+
 func main() {
 	flag.Parse()
 
-	// Load the dictionary.
-	dict, err := dictionary("../dictionaries/whirlyWord.dict")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	for _, file := range []string{"whirlyWord.dict", "merged.dict"} {
+		// Load the dictionary.
+		dict, err := dictionary("../dictionaries/" + file)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-	// If there is a word to look up do that, else print matchless words.
-	if *spell != "" {
-		for _, d := range dict {
-			if *spell == d {
-				fmt.Println("This is a known word!!!")
-				break
+		if known(*spell, dict) {
+			fmt.Printf("This is a known word!!! (%s)\n", file)
+		}
+
+		// If there is a word to look up do that, else print matchless words.
+		if *spell != "" {
+			s := spellables(*spell, dict)
+			fmt.Println(s, len(s))
+		} else {
+			// Find all words that are spellable from a given word.
+			s := make(map[string][]string)
+			for _, word := range dict {
+				s[word] = spellables(word, dict)
 			}
+			fmt.Println(longestMatchless(s))
 		}
-
-		s := spellables(*spell, dict)
-		fmt.Println(s, len(s))
-	} else {
-		// This can be sped up greatly. Short circuit after any match is
-		// found. We don't need to find all matches; any match is an
-		// automatic elimination from consideration.
-
-		// Find all words that are spellable from a given word.
-		s := make(map[string][]string)
-		for _, word := range dict {
-			s[word] = spellables(word, dict)
-		}
-
-		fmt.Println(longestMatchless(s))
+		fmt.Println()
 	}
 }
