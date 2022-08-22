@@ -1,4 +1,8 @@
-Spellable
+![go fmt](https://github.com/erikbryant/spellable/actions/workflows/fmt.yml/badge.svg)
+![go vet](https://github.com/erikbryant/spellable/actions/workflows/vet.yml/badge.svg)
+![go test](https://github.com/erikbryant/spellable/actions/workflows/test.yml/badge.svg)
+
+# Spellable
 
 Given a dictionary of words, find all of the words that can be spelled from any given word.
 
