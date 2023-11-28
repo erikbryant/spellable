@@ -5,7 +5,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"sort"
 	"strings"
 )
@@ -16,9 +16,9 @@ var (
 
 // dictionary reads the contents of the dictionary, minus any blank lines
 func dictionary(file string) ([]string, error) {
-	contents, err := ioutil.ReadFile(file)
+	contents, err := os.ReadFile(file)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to read file %s", file)
+		return nil, fmt.Errorf("unable to read file %s", file)
 	}
 
 	words := strings.Split(string(contents), "\n")
